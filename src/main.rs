@@ -1,3 +1,5 @@
+mod models;
+
 use std::time::Instant;
 
 use axum::{Json, Router, extract::State, routing::get};
