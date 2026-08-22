@@ -4,6 +4,7 @@ mod error;
 mod middleware;
 mod models;
 mod state;
+mod repository;
 
 use std::{net::SocketAddr, time::Instant};
 
