@@ -1,9 +1,12 @@
+mod config;
 mod models;
 
-use std::time::Instant;
+use std::{net::SocketAddr, time::Instant};
 
 use axum::{Json, Router, extract::State, routing::get};
 use serde::Serialize;
+
+use crate::config::Config;
 
 #[derive(Clone)]
 struct AppState {
@@ -18,9 +21,18 @@ struct RootResponse {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    dotenvy::dotenv().ok();
+    let _ = dotenvy::dotenv();
 
-    let bind_addr = std::env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:3000".to_string());
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "info,sqlx=warn".into()),
+        )
+        .init();
+
+    let config = Config::from_env();
+
+    tracing::info!(env = %config.env, "starting media-pipeline backend");
 
     let state = AppState {
         started_at: Instant::now(),
@@ -28,12 +40,10 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new().route("/", get(root)).with_state(state);
 
-    let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
+    let addr: SocketAddr = config.server_addr.parse()?;
+    tracing::info!(%addr, "listening");
 
-    println!(
-        "Server running on :{}",
-        bind_addr.rsplit(':').next().unwrap_or(&bind_addr)
-    );
+    let listener = tokio::net::TcpListener::bind(addr).await?;
 
     axum::serve(listener, app).await?;
 
