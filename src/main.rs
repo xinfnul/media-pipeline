@@ -1,10 +1,11 @@
 mod auth;
 mod config;
 mod error;
+mod handlers;
 mod middleware;
 mod models;
-mod state;
 mod repository;
+mod state;
 
 use std::{net::SocketAddr, time::Instant};
 
