@@ -20,7 +20,7 @@ impl AppState {
 
 impl std::ops::Deref for AppState {
     type Target = AppStateInner;
-    
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
