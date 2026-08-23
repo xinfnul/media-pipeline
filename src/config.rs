@@ -4,6 +4,8 @@ use std::{env, panic};
 pub struct Config {
     pub database_url: String,
     pub jwt_access_secret: String,
+    
+    #[allow(dead_code)]
     pub jwt_refresh_secret: String,
     pub access_token_ttl_seconds: i64,
     pub refresh_token_ttl_seconds: i64,

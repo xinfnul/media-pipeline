@@ -7,22 +7,25 @@ edition = "2024"
 axum = { version = "0.8.9", features = ["macros"] }
 axum-extra = { version = "0.12.6", features = ["typed-header"] }
 tokio = { version = "1.53.1", features = ["full"] }
+tower-http = { version = "0.7.0", features = ["cors", "trace", "timeout"] }
 
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 
-sqlx = { version = "0.9.0", features = ["postgres", "uuid", "chrono", "migrate"] }
+sqlx = { version = "0.9.0", features = ["postgres", "uuid", "chrono", "migrate", "runtime-tokio"] }
 
 uuid = { version = "1.24.1", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 
-jsonwebtoken = "11.0.0"
+jsonwebtoken = { version = "11.0.0", default-features = false, features = ["aws_lc_rs"] }
 argon2 = { version = "0.5.3", features = ["std"] }
 rand = "0.10.2"
 rand_core = "0.10.1"
 sha2 = "0.11.0"
 base64 = "0.23.1"
 hex = "0.4.3"
+
+rustls = { version = "0.23.43", features = ["aws-lc-rs"] }
 
 dotenvy = "0.15.7"
 validator = { version = "0.21.0", features = ["derive"] }
