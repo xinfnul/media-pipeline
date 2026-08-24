@@ -3,9 +3,8 @@ use axum::{Json, extract::State};
 use crate::{
     error::{AppError, AppResult},
     middleware::auth::CurrentUser,
-    models::UserResponse,
-    repository,
     state::AppState,
+    users::{models::UserResponse, repository},
 };
 
 pub async fn me(

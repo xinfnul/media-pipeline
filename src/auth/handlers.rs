@@ -6,15 +6,14 @@ use validator::Validate;
 use crate::{
     auth::{
         jwt::create_access_token,
+        models::{AuthResponse, LoginRequest, MessageResponse, RefreshRequest, RegisterRequest},
         password::{hash_password, verify_password},
         refresh::{generate_refresh_token, hash_refresh_token},
+        repository,
     },
     error::{AppError, AppResult},
-    models::{
-        AuthResponse, LoginRequest, MessageResponse, RefreshRequest, RegisterRequest, UserResponse,
-    },
-    repository,
     state::AppState,
+    users::{self, models::UserResponse},
 };
 
 const MAX_FAILED_ATTEMPTS: i32 = 5;
@@ -61,7 +60,7 @@ pub async fn register(
 ) -> AppResult<(StatusCode, Json<AuthResponse>)> {
     payload.validate().map_err(validation_error)?;
 
-    if repository::find_user_by_email(&state.db, &payload.email)
+    if users::repository::find_user_by_email(&state.db, &payload.email)
         .await?
         .is_some()
     {
@@ -69,7 +68,7 @@ pub async fn register(
     }
 
     let password_hash = hash_password(&payload.password)?;
-    let user = repository::create_user(&state.db, &payload.email, &password_hash).await?;
+    let user = users::repository::create_user(&state.db, &payload.email, &password_hash).await?;
 
     let (access_token, refresh_token) = issue_token_pair(&state, user.id, None, None).await?;
 
@@ -91,7 +90,7 @@ pub async fn login(
 ) -> AppResult<Json<AuthResponse>> {
     payload.validate().map_err(validation_error)?;
 
-    let user = repository::find_user_by_email(&state.db, &payload.email)
+    let user = users::repository::find_user_by_email(&state.db, &payload.email)
         .await?
         .ok_or(AppError::InvalidCredentials)?;
 
@@ -144,7 +143,7 @@ pub async fn refresh(
         return Err(AppError::Unauthorized);
     }
 
-    let user = repository::find_user_by_id(&state.db, stored.user_id)
+    let user = users::repository::find_user_by_id(&state.db, stored.user_id)
         .await?
         .ok_or(AppError::Unauthorized)?;
 
