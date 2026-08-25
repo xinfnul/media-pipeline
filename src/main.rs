@@ -6,6 +6,7 @@ mod handlers;
 mod middleware;
 mod state;
 mod users;
+mod videos;
 
 use std::{net::SocketAddr, time::Duration};
 
