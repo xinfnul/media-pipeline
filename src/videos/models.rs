@@ -36,7 +36,7 @@ pub struct Video {
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateVideoRequest {
-	#[validate(length(min = 1, max = 200, message = "title must be 1-200 characters"))]
+    #[validate(length(min = 1, max = 200, message = "title must be 1-200 characters"))]
     pub title: String,
 }
 
@@ -52,24 +52,27 @@ pub struct CreateVideoResponse {
     pub signature: String,
     pub public_id: String,
     pub status: VideoStatus,
+    pub eager: String,
+    pub eager_async: bool,
+    pub notification_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct VideoResponse {
-	pub id: Uuid,
-	pub title: String,
-	pub status: VideoStatus,
-	pub duration_seconds: Option<i32>,
-	pub thumbnail_url: Option<String>,
-	pub playback_url: Option<String>,
-	pub error_message: Option<String>,
-	pub created_at: DateTime<Utc>,
+    pub id: Uuid,
+    pub title: String,
+    pub status: VideoStatus,
+    pub duration_seconds: Option<i32>,
+    pub thumbnail_url: Option<String>,
+    pub playback_url: Option<String>,
+    pub error_message: Option<String>,
+    pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
 impl From<Video> for VideoResponse {
-	fn from(v: Video) -> Self {
-		Self {
+    fn from(v: Video) -> Self {
+        Self {
             id: v.id,
             title: v.title,
             status: v.status,
@@ -80,5 +83,5 @@ impl From<Video> for VideoResponse {
             created_at: v.created_at,
             updated_at: v.updated_at,
         }
-	}
+    }
 }

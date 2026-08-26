@@ -9,6 +9,9 @@ pub struct SignedUpload {
     pub timestamp: i64,
     pub signature: String,
     pub public_id: String,
+    pub notification_url: Option<String>,
+    pub eager: String,
+    pub eager_async: bool,
 }
 
 pub struct CloudinaryClient {
@@ -31,12 +34,20 @@ impl CloudinaryClient {
     pub fn build_signed_upload(&self, public_id: &str) -> SignedUpload {
         let timestamp = chrono::Utc::now().timestamp();
 
+        // Ask cloudinary to generate, asynchronously, and HLS manifest
+        // and a poster-frame thumbnail from the uploaded video.
+        let eager = "sp_hd/m3u8|so_0/jpg".to_string();
+        let eager_async = true;
+
         let mut params: Vec<(&str, String)> = vec![
+            ("eager", eager.clone()),
+            ("eager_async", eager_async.to_string()),
             ("public_id", public_id.to_string()),
             ("timestamp", timestamp.to_string()),
         ];
         if let Some(url) = &self.notification_url {
             params.push(("notification_url", url.clone()));
+            params.push(("eager_notification_url", url.clone()));
         }
         params.sort_by(|a, b| a.0.cmp(b.0));
 
@@ -62,6 +73,9 @@ impl CloudinaryClient {
             timestamp,
             signature,
             public_id: public_id.to_string(),
+            notification_url: self.notification_url.clone(),
+            eager,
+            eager_async,
         }
     }
 
