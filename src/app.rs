@@ -13,7 +13,7 @@ use tower_http::{
 };
 use tracing::Level;
 
-use crate::{auth, config::Config, handlers, state::AppState, users};
+use crate::{auth, config::Config, handlers, state::AppState, users, videos};
 
 pub fn build_router(state: AppState, config: &Config) -> Router {
     let cors = if config.is_production() {
@@ -43,9 +43,15 @@ pub fn build_router(state: AppState, config: &Config) -> Router {
         .route("/live", get(handlers::health::liveness))
         .route("/ready", get(handlers::health::readiness));
 
+    let video_routes = Router::new()
+        .route("/", post(videos::handlers::create_video))
+        .route("/", get(videos::handlers::list_videos))
+        .route("/{id}", get(videos::handlers::get_video));
+
     Router::new()
         .nest("/api/auth", auth_routes)
         .nest("/api/users", user_routes)
+        .nest("/api/videos", video_routes)
         .nest("/health", health_routes)
         .fallback(handler_404)
         .layer(

@@ -5,6 +5,7 @@ mod error;
 mod handlers;
 mod middleware;
 mod state;
+mod storage;
 mod users;
 mod videos;
 

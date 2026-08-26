@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use validator::Validate;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, Serialize, Deserialize)]
 #[sqlx(type_name = "video_status", rename_all = "UPPERCASE")]
@@ -33,8 +34,9 @@ pub struct Video {
 
 // ----------------------------------------------------------------------
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Deserialize, Validate)]
 pub struct CreateVideoRequest {
+	#[validate(length(min = 1, max = 200, message = "title must be 1-200 characters"))]
     pub title: String,
 }
 

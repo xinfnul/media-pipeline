@@ -4,7 +4,7 @@ use std::{env, panic};
 pub struct Config {
     pub database_url: String,
     pub jwt_access_secret: String,
-    
+
     #[allow(dead_code)]
     pub jwt_refresh_secret: String,
     pub access_token_ttl_seconds: i64,
@@ -12,6 +12,11 @@ pub struct Config {
     pub server_addr: String,
     pub cors_origin: String,
     pub env: String,
+
+    pub cloudinary_cloud_name: String,
+    pub cloudinary_api_key: String,
+    pub cloudinary_api_secret: String,
+    pub cloudinary_notification_url: Option<String>,
 }
 
 impl Config {
@@ -44,6 +49,11 @@ impl Config {
 
         let env = env::var("APP_ENV").unwrap_or_else(|_| "development".to_string());
 
+        let cloudinary_cloud_name = must_get("CLOUDINARY_CLOUD_NAME");
+        let cloudinary_api_key = must_get("CLOUDINARY_API_KEY");
+        let cloudinary_api_secret = must_get("CLOUDINARY_API_SECRET");
+        let cloudinary_notification_url = env::var("CLOUDINARY_NOTIFICATION_URL").ok();
+
         Self {
             database_url,
             jwt_access_secret,
@@ -53,6 +63,10 @@ impl Config {
             server_addr,
             cors_origin,
             env,
+            cloudinary_cloud_name,
+            cloudinary_api_key,
+            cloudinary_api_secret,
+            cloudinary_notification_url,
         }
     }
 
