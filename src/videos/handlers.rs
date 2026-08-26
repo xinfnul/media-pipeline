@@ -49,6 +49,9 @@ pub async fn create_video(
         signature: signed.signature,
         public_id: signed.public_id,
         status: video.status,
+        eager: signed.eager,
+        eager_async: signed.eager_async,
+        notification_url: signed.notification_url,
     }))
 }
 
