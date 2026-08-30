@@ -17,6 +17,9 @@ pub struct Config {
     pub cloudinary_api_key: String,
     pub cloudinary_api_secret: String,
     pub cloudinary_notification_url: Option<String>,
+
+    pub cookie_secure: bool,
+    pub cookie_same_site: String,
 }
 
 impl Config {
@@ -54,6 +57,14 @@ impl Config {
         let cloudinary_api_secret = must_get("CLOUDINARY_API_SECRET");
         let cloudinary_notification_url = env::var("CLOUDINARY_NOTIFICATION_URL").ok();
 
+        let is_production_env = env.to_lowercase() == "production";
+
+        let cookie_secure = env::var("COOKIE_SECURE")
+            .map(|cs| cs == "true" || cs == "1")
+            .unwrap_or(is_production_env);
+
+        let cookie_same_site = env::var("COOKIE_SAME_SITE").unwrap_or_else(|_| ";lax".to_string());
+
         Self {
             database_url,
             jwt_access_secret,
@@ -67,6 +78,8 @@ impl Config {
             cloudinary_api_key,
             cloudinary_api_secret,
             cloudinary_notification_url,
+            cookie_secure,
+            cookie_same_site,
         }
     }
 

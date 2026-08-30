@@ -5,9 +5,10 @@ edition = "2024"
 
 [dependencies]
 axum = { version = "0.8.9", features = ["macros"] }
-axum-extra = { version = "0.12.6", features = ["typed-header"] }
+axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tokio = { version = "1.53.1", features = ["full"] }
 tower-http = { version = "0.7.0", features = ["cors", "trace", "timeout"] }
+time = "0.3"
 
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"

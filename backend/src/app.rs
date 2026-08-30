@@ -1,9 +1,7 @@
 use std::time::Duration;
 
 use axum::{
-    Json, Router,
-    http::{HeaderValue, Method, StatusCode},
-    routing::{get, post},
+    Json, Router, http::{HeaderName, HeaderValue, Method, StatusCode, header}, routing::{get, post},
 };
 use serde_json::json;
 use tower_http::{
@@ -16,6 +14,8 @@ use tracing::Level;
 use crate::{auth, config::Config, handlers, state::AppState, storage, users, videos};
 
 pub fn build_router(state: AppState, config: &Config) -> Router {
+	let allowed_headers: [HeaderName; 2] = [header::CONTENT_TYPE, header::AUTHORIZATION];
+	
     let cors = if config.is_production() {
         CorsLayer::new()
             .allow_origin(
@@ -25,8 +25,8 @@ pub fn build_router(state: AppState, config: &Config) -> Router {
                     .expect("CORS_ORIGIN must be a valid header value"),
             )
             .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-            .allow_headers(tower_http::cors::Any)
-            .allow_credentials(false)
+            .allow_headers(allowed_headers)
+            .allow_credentials(true)
     } else {
         CorsLayer::permissive()
     };

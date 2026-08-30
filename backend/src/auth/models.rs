@@ -42,17 +42,11 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct RefreshRequest {
-    pub refresh_token: String,
-}
-
 // ----------------------------------------------------------------------
 
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
     pub access_token: String,
-    pub refresh_token: String,
     pub token_type: &'static str,
     pub expires_in: i64,
     pub user: UserResponse,
