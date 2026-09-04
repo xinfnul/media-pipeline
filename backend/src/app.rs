@@ -16,20 +16,16 @@ use crate::{auth, config::Config, handlers, state::AppState, storage, users, vid
 pub fn build_router(state: AppState, config: &Config) -> Router {
 	let allowed_headers: [HeaderName; 2] = [header::CONTENT_TYPE, header::AUTHORIZATION];
 	
-    let cors = if config.is_production() {
-        CorsLayer::new()
-            .allow_origin(
-                config
-                    .cors_origin
-                    .parse::<HeaderValue>()
-                    .expect("CORS_ORIGIN must be a valid header value"),
-            )
-            .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-            .allow_headers(allowed_headers)
-            .allow_credentials(true)
-    } else {
-        CorsLayer::permissive()
-    };
+	let cors = CorsLayer::new()
+    .allow_origin(
+        config
+            .cors_origin
+            .parse::<HeaderValue>()
+            .expect("CORS_ORIGIN must be a valid header value"),
+    )
+    .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+    .allow_headers(allowed_headers)
+    .allow_credentials(true);
 
     let auth_routes = Router::new()
         .route("/register", post(auth::handlers::register))
