@@ -1,10 +1,10 @@
 import { Link, useLocation, useNavigate, type Location } from "react-router-dom";
 import { useState, type SubmitEvent } from "react";
-import { AuthLayout } from "../components/layout/AuthLayout";
-import { extractErrorMessage, useAuth } from "../context/AuthContext";
-import { Alert } from "../components/ui/Alert";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
+import { AuthLayout } from "@/components/layout/AuthLayout";
+import { extractErrorMessage, useAuth } from "@/context/AuthContext";
+import { Alert } from "@/components/ui/Alert";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export function LoginPage() {
 	const { login } = useAuth();

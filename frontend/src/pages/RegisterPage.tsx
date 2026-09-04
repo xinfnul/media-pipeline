@@ -1,11 +1,11 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { SubmitEvent } from "react";
-import { AuthLayout } from "../components/layout/AuthLayout";
-import { extractErrorMessage, useAuth } from "../context/AuthContext";
-import { useState } from "react";
-import { Alert } from "../components/ui/Alert";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
+import { AuthLayout } from "@/components/layout/AuthLayout";
+import { extractErrorMessage, useAuth } from "@/context/AuthContext";
+import { Alert } from "@/components/ui/Alert";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 const MIN_PASSWORD_LENGTH: number = 12;
 

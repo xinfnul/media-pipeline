@@ -1,5 +1,5 @@
-import { useAuth } from "../context/AuthContext";
-import { AppLayout } from "../components/layout/AppLayout";
+import { useAuth } from "@/context/AuthContext";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 export function DashboardPage() {
   const { user } = useAuth();
