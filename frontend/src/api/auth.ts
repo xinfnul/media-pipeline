@@ -25,18 +25,14 @@ export async function loginRequest(
 	return data;
 }
 
-export async function refreshRequest(
-	refreshToken: string,
-): Promise<AuthResponse> {
-	const { data } = await apiClient.post<AuthResponse>("/auth/refresh", {
-		refresh_token: refreshToken,
-	});
+export async function refreshRequest(): Promise<AuthResponse> {
+	const { data } = await apiClient.post<AuthResponse>("/auth/refresh");
 
 	return data;
 }
 
-export async function logoutRequest(refreshToken: string): Promise<void> {
-	await apiClient.post("/auth/logout", { refresh_token: refreshToken });
+export async function logoutRequest(): Promise<void> {
+	await apiClient.post("/auth/logout");
 }
 
 export async function fetchCurrentUser(): Promise<User> {

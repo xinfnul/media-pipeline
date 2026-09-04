@@ -1,11 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import { PublicOnlyRoute } from "./routes/PublicOnlyRoute";
-import { ProtectedRoute } from "./routes/ProtectedRoute";
-import { DashboardPage } from "./pages/DashboardPage";
-import { NotFoundPage } from "./pages/NotFoundPage";
-import { LoginPage } from "./pages/LoginPage";
-import { RegisterPage } from "./pages/RegisterPage";
+import { AuthProvider } from "@/context/AuthContext";
+import { PublicOnlyRoute } from "@/routes/PublicOnlyRoute";
+import { ProtectedRoute } from "@/routes/ProtectedRoute";
+import { DashboardPage } from "@/pages/DashboardPage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
+import { LoginPage } from "@/pages/LoginPage";
+import { RegisterPage } from "@/pages/RegisterPage";
 
 export default function App() {
 	return (
