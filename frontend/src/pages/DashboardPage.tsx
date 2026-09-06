@@ -1,39 +1,104 @@
 import { useAuth } from "@/context/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useVideoLibrary } from "@/hooks/useVideoLibrary";
+import { useEffect, useState } from "react";
+import { useVideoUpload } from "@/hooks/useVideoUpload";
+import { validateVideoFile } from "@/lib/fileValidation";
+import { UploadDropZone } from "@/components/videos/UploadDropZone";
+import { Alert } from "@/components/ui/Alert";
+import { UploadProgressCard } from "@/components/videos/UploadProgressCard";
+import { VideoGrid } from "@/components/videos/VideoGrid";
+
+const POLL_INTERVAL_MS = 3000;
 
 export function DashboardPage() {
-  const { user } = useAuth();
+	const { user } = useAuth();
+	const { videos, isLoading, error, refresh, upsertVideo } = useVideoLibrary();
+	const [rejection, setRejection] = useState<string | null>(null);
 
-  return (
-    <AppLayout>
-      <div className="rounded border border-border bg-bg-surface p-6">
-        <h1 className="mb-1 text-lg font-semibold text-text-primary">
-          Signed in
-        </h1>
-        <p className="mb-6 text-sm text-text-muted">
-          Authentication is wired up. Upload flows come next.
-        </p>
+	const {
+		upload,
+		isUploading,
+		startUpload,
+		cancelUpload,
+		retryUpload,
+		clearIfSettled,
+	} = useVideoUpload({ onCreated: upsertVideo, onSettled: refresh });
 
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-          <dt className="text-text-muted">Email</dt>
-          <dd className="text-text-primary">{user?.email}</dd>
+	// Poll the list while anything is still moving
+	useEffect(() => {
+		const hasActiveVideo = videos.some(
+			(v) => v.status !== "READY" && v.status !== "FAILED",
+		);
 
-          <dt className="text-text-muted">User ID</dt>
-          <dd className="break-all text-text-primary">{user?.id}</dd>
+		if (!hasActiveVideo && !isUploading) {
+			return;
+		}
 
-          <dt className="text-text-muted">Verified</dt>
-          <dd className="text-text-primary">
-            {user?.is_verified ? "Yes" : "No"}
-          </dd>
+		const interval = setInterval(refresh, POLL_INTERVAL_MS);
+		return () => {
+			clearInterval(interval);
+		};
+	}, [videos, isUploading, refresh]);
 
-          <dt className="text-text-muted">Joined</dt>
-          <dd className="text-text-primary">
-            {user?.created_at
-              ? new Date(user.created_at).toLocaleString()
-              : "—"}
-          </dd>
-        </dl>
-      </div>
-    </AppLayout>
-  );
+	// Once the video reaches READY/ FAILED, drop the progress card.
+	useEffect(() => {
+		const settledIds = new Set(
+			videos
+				.filter((v) => v.status === "READY" || v.status === "FAILED")
+				.map((v) => v.id),
+		);
+
+		if (settledIds) {
+			clearIfSettled(settledIds);
+		}
+	}, [videos, clearIfSettled]);
+
+	function handleFiles(files: File[]) {
+		const file = files[0];
+		if (!file) {
+			return;
+		}
+
+		const validationError = validateVideoFile(file);
+		if (validationError) {
+			setRejection(validationError);
+			return;
+		}
+
+		setRejection(null);
+		startUpload(file);
+	}
+
+	return (
+		<AppLayout>
+			<div className="flex flex-col gap-6">
+				<div>
+					<h1 className="text-lg font-semibold text-text-primary">
+						Your videos
+					</h1>
+					<p className="text-sm text-text-muted">Signed in as {user?.email}</p>
+				</div>
+
+				<UploadDropZone onFiles={handleFiles} disabled={isUploading} />
+
+				{rejection && <Alert message={rejection} />}
+				{error && <Alert message={error} />}
+
+				{upload && (
+					<UploadProgressCard
+						upload={upload}
+						onCancel={cancelUpload}
+						onRetry={retryUpload}
+					/>
+				)}
+
+				{isLoading ? (
+					<p className="text-sm text-text-muted">Loading your videos…</p>
+				) : (
+					<VideoGrid videos={videos} />
+				)}
+			</div>
+		</AppLayout>
+	);
 }
